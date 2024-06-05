@@ -1,0 +1,158 @@
+CREATE TABLE cache (
+    key CHAR(64) NOT NULL,
+    value TEXT NOT NULL,
+    expiration INT NOT NULL,
+    PRIMARY KEY (key)
+);
+
+
+CREATE TABLE migrations (
+    id SERIAL PRIMARY KEY,
+    migration VARCHAR(255) NOT NULL,
+    batch INT NOT NULL
+);
+
+
+CREATE TABLE password_resets_tokens (
+    email VARCHAR(255) NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE personal_access_tokens (
+    id SERIAL PRIMARY KEY,
+    tokenable_type VARCHAR(255) NOT NULL,
+    tokenable_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    token VARCHAR(64) NOT NULL UNIQUE,
+    abilities TEXT,
+    last_used_at TIMESTAMP(0) WITHOUT TIME ZONE,
+    created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE sessions (
+    id CHAR(128) NOT NULL PRIMARY KEY,
+    user_id BIGINT,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    payload TEXT NOT NULL,
+    last_activity INT NOT NULL
+);
+
+
+
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE user_profiles (
+    id SERIAL PRIMARY KEY,
+    user_id INT UNIQUE NOT NULL,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    birthday DATE NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+CREATE TABLE groups (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE group_users (
+    user_id INT NOT NULL,
+    group_id INT NOT NULL,
+    PRIMARY KEY (user_id, group_id),
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (group_id) REFERENCES groups (id)
+);
+
+CREATE TABLE teams (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    group_id INT,
+    user_id INT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (group_id) REFERENCES groups (id),
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+CREATE TABLE football_players (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    real_team VARCHAR(255),
+    foot VARCHAR(50),
+    image_url TEXT,
+    fantasy_position VARCHAR(255),
+    position_short_name VARCHAR(5),
+    position_group VARCHAR(255),
+    age INT,
+    shirt_number INT,
+    nationality VARCHAR(255)
+);
+
+
+CREATE TABLE player_teams (
+    player_id INT NOT NULL,
+    team_id INT NOT NULL,
+    PRIMARY KEY (player_id, team_id),
+    FOREIGN KEY (player_id) REFERENCES football_players (id) ON DELETE CASCADE,
+    FOREIGN KEY (team_id) REFERENCES teams (id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE player_stats (
+    id SERIAL PRIMARY KEY,
+    football_player_id INT,
+    real_market_value VARCHAR(100),
+    fantasy_market_value VARCHAR(100),
+    value_fluctuation VARCHAR(10),
+    average_rating DECIMAL(10,2),
+    score DECIMAL(10,2),
+    points_from_penultimate_match INT,
+    games_played INT,
+    minutes_played INT,
+    goals INT,
+    assists INT,
+    assists_no_goal INT,
+    balls_into_box INT,
+    clearances INT,
+    dribbles INT,
+    shots_on_goal INT,
+    balls_recovered INT,
+    possession_losses INT,
+    penalties_missed INT,
+    goals_conceded INT,
+    red_cards INT,
+    set_pieces INT,
+    penalties_scored INT,
+    yellow_cards INT,
+    second_yellow_cards INT,
+    penalties_won INT,
+    penalties_saved INT,
+    own_goals INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (football_player_id) REFERENCES football_players (id)
+);
+
+
+
+
+INSERT INTO users (id, username, password) VALUES (1, 'draftkingsue@gmail.com', '$2y$12$R5bZtzfubi73WgDfUl4EtuKC39VzUGjn1zodlGkCAPfTYPKjgv.JW');
+INSERT INTO user_profiles (user_id, first_name, last_name, birthday) VALUES (1, 'Primer Usuario', ' de Prueba', '1976-01-10');
+
+INSERT INTO groups (name, description) VALUES ('PC2', 'PC2 Group');
+INSERT INTO group_users (user_id, group_id) VALUES (1, 1);
+INSERT INTO teams (name, group_id, user_id) VALUES ('Primer equipo creado', 1, 1);
+
+

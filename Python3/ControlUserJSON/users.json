@@ -1,0 +1,11 @@
+{
+    "Users": [
+        {
+            "id": 4649215184,
+            "name": "camilo",
+            "password": "12345",
+            "subscription": "free",
+            "group_hash": 521266
+        }
+    ]
+}
